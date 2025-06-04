@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WEBSITE REKAP SEDHANA</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background: #f7f9fc;
+      color: #222;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: #2c3e50;
+    }
+    form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    form input, form select, form button {
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      min-width: 150px;
+      transition: border-color 0.2s;
+    }
+    form input:focus, form select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    form button {
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      cursor: pointer;
+      min-width: 120px;
+      font-weight: 600;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    form button:hover {
+      background-color: #1f6391;
+    }
+    .columns {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .column {
+      flex: 1 1 450px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      padding: 15px;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+    .column h2 {
+      text-align: center;
+      color: #34495e;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    thead {
+      background-color: #3498db;
+      color: white;
+    }
+    th, td {
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+      vertical-align: middle;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tbody tr.bayar {
+      background-color: #d4edda !important;
+      color: #155724;
+      font-weight: 600;
+    }
+    td.nama, td.paket {
+      text-align: left;
+    }
+    td.nohp a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+    td.nohp a:hover {
+      text-decoration: underline;
+    }
+    td.aksi {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+    td.aksi button {
+      background-color: #2980b9;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: background-color 0.3s;
+      min-width: 32px;
+      justify-content: center;
+    }
+    td.aksi button:hover {
+      background-color: #1f6391;
+    }
+    td.aksi button svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+    td.aksi button span {
+      display: none; /* Hide text, keep icon only for clean look */
+    }
+    #resetBtn {
+      margin: 25px auto 0;
+      display: block;
+      background-color: #c0392b;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 5px;
+      cursor: pointer;
+      max-width: 300px;
+      width: 90%;
+      transition: background-color 0.3s;
+    }
+    #resetBtn:hover {
+      background-color: #962d22;
+    }
+    /* Popup Edit */
+    #popupEdit {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    #popupEdit .popup-content {
+      background: white;
+      border-radius: 8px;
+      padding: 25px 30px;
+      width: 350px;
+      max-width: 95vw;
+      box-shadow: 0 0 15px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    #popupEdit h3 {
+      margin: 0 0 10px 0;
+      font-weight: 700;
+      color: #2c3e50;
+      text-align: center;
+    }
+    #popupEdit input, #popupEdit select {
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #popupEdit input:focus, #popupEdit select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    #popupEdit .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 15px;
+    }
+    #popupEdit .save-btn, #popupEdit .cancel-btn {
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: 700;
+      padding: 8px 16px;
+      border: none;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    #popupEdit .save-btn {
+      background-color: #27ae60;
+      color: white;
+    }
+    #popupEdit .save-btn:hover {
+      background-color: #1e8449;
+    }
+    #popupEdit .cancel-btn {
+      background-color: #e74c3c;
+      color: white;
+    }
+    #popupEdit .cancel-btn:hover {
+      background-color: #b03027;
+    }
+
+    /* Responsive for mobile */
+    @media (max-width: 600px) {
+      form {
+        flex-direction: column;
+        gap: 12px;
+      }
+      form input, form select, form button {
+        flex: 1 1 100%;
+        font-size: 16px;
+        min-width: unset;
+      }
+      .columns {
+        flex-direction: column;
+        gap: 20px;
+      }
+      .column {
+        flex: 1 1 100%;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+      table {
+        min-width: 500px;
+      }
+      td.aksi {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      td.aksi button {
+        flex: 1 1 48%;
+        font-size: 12px;
+        padding: 6px 8px;
+        min-width: unset;
+        justify-content: center;
+      }
+      td.aksi button span {
+        display: none; /* keep icons only on mobile as well */
+      }
+      #popupEdit .popup-content {
+        width: 90vw;
+        max-width: 320px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>WEBSITE REKAP SEDHANA</h1>
+
+  <form id="formTambah">
+    <input type="text" id="namaInput" placeholder="Nama Pelanggan" required />
+    <input type="date" id="tanggalInput" required />
+    <select id="paketInput" required>
+      <option value="" disabled selected>Pilih Paket Wifi</option>
+      <option value="10 Mbps (150.000)">10 Mbps (150.000)</option>
+      <option value="20 Mbps (200.000)">20 Mbps (200.000)</option>
+      <option value="30 Mbps (225.000)">30 Mbps (225.000)</option>
+      <option value="50 Mbps (350.000)">50 Mbps (350.000)</option>
+    </select>
+    <input type="tel" id="nohpInput" placeholder="Nomor HP (e.g. 6281234567890)" pattern="[0-9]{9,15}" required />
+    <button type="submit">Tambah Pelanggan</button>
+  </form>
+
+  <div class="columns">
+    <div class="column">
+      <h2>Belum Bayar</h2>
+      <table id="tableBelumBayar" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Tanggal</th>
+            <th>Paket</th>
+            <th>No HP</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="column">
+      <h2>Sudah Bayar</h2>
+      <table id="tableSudahBayar" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Tanggal</th>
+            <th>Paket</th>
+            <th>No HP</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <button id="resetBtn">Reset Semua dan Export PDF</button>
+
+  <!-- Popup Edit -->
+  <div id="popupEdit" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <div class="popup-content">
+      <h3 id="editTitle">Edit Pelanggan</h3>
+      <input type="text" id="editNama" placeholder="Nama Pelanggan" required />
+      <input type="date" id="editTanggal" required />
+      <select id="editPaket" required>
+        <option value="" disabled>Pilih Paket Wifi</option>
+        <option value="10 Mbps (150.000)">10 Mbps (150.000)</option>
+        <option value="20 Mbps (200.000)">20 Mbps (200.000)</option>
+        <option value="30 Mbps (225.000)">30 Mbps (225.000)</option>
+        <option value="50 Mbps (350.000)">50 Mbps (350.000)</option>
+      </select>
+      <input type="tel" id="editNohp" placeholder="Nomor HP (e.g. 6281234567890)" pattern="[0-9]{9,15}" required />
+      <div class="btn-group">
+        <button class="save-btn" id="simpanEditBtn">Simpan</button>
+        <button class="cancel-btn" id="cancelEditBtn">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const { jsPDF } = window.jspdf;
+
+    const formTambah = document.getElementById("formTambah");
+    const namaInput = document.getElementById("namaInput");
+    const tanggalInput = document.getElementById("tanggalInput");
+    const paketInput = document.getElementById("paketInput");
+    const nohpInput = document.getElementById("nohpInput");
+
+    const tableBelumBayar = document.querySelector("#tableBelumBayar tbody");
+    const tableSudahBayar = document.querySelector("#tableSudahBayar tbody");
+
+    const popupEdit = document.getElementById("popupEdit");
+    const editNama = document.getElementById("editNama");
+    const editTanggal = document.getElementById("editTanggal");
+    const editPaket = document.getElementById("editPaket");
+    const editNohp = document.getElementById("editNohp");
+    const simpanEditBtn = document.getElementById("simpanEditBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+    const resetBtn = document.getElementById("resetBtn");
+
+    let dataPelanggan = [];
+    let indexEdit = null;
+
+    function simpanData() {
+      localStorage.setItem("dataPelangganSedhana", JSON.stringify(dataPelanggan));
+    }
+
+    function loadData() {
+      const simpanan = localStorage.getItem("dataPelangganSedhana");
+      if (simpanan) {
+        dataPelanggan = JSON.parse(simpanan);
+      } else {
+        dataPelanggan = [];
+      }
+    }
+
+    function clearInput() {
+      namaInput.value = "";
+      tanggalInput.value = "";
+      paketInput.value = "";
+      nohpInput.value = "";
+      paketInput.selectedIndex = 0; // reset ke "Pilih Paket Wifi"
+    }
+
+    function buatIcon(pathD) {
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("aria-hidden", "true");
+      const path = document.createElementNS(svgNS, "path");
+      path.setAttribute("d", pathD);
+      svg.appendChild(path);
+      return svg;
+    }
+
+    function renderTable() {
+      tableBelumBayar.innerHTML = "";
+      tableSudahBayar.innerHTML = "";
+
+      dataPelanggan.forEach((pel, i) => {
+        const tr = document.createElement("tr");
+        if (pel.sudahBayar) {
+          tr.classList.add("bayar");
+        }
+
+        tr.innerHTML = `
+          <td class="nama">${pel.nama}</td>
+          <td>${pel.tanggal}</td>
+          <td class="paket">${pel.paket}</td>
+          <td class="nohp"><a href="https://wa.me/${pel.nohp}" target="_blank" rel="noopener noreferrer">${pel.nohp}</a></td>
+          <td class="aksi"></td>
+        `;
+
+        const aksiTd = tr.querySelector(".aksi");
+
+        // Tombol Bayar / Belum Bayar
+        const bayarBtn = document.createElement("button");
+        if (pel.sudahBayar) {
+          bayarBtn.title = "Ubah jadi Belum Bayar";
+          bayarBtn.innerHTML = "Belum Bayar";
+          bayarBtn.style.backgroundColor = "#e67e22"; // orange
+          bayarBtn.onclick = () => {
+            if(confirm("Ubah status pelanggan menjadi belum bayar?")) {
+              pel.sudahBayar = false;
+              simpanData();
+              renderTable();
+            }
+          };
+        } else {
+          bayarBtn.title = "Tandai Sudah Bayar";
+          bayarBtn.innerHTML = "Sudah Bayar";
+          bayarBtn.style.backgroundColor = "#27ae60"; // hijau
+          bayarBtn.onclick = () => {
+            if(confirm("Apakah benar pelanggan sudah melakukan pembayaran?")) {
+              pel.sudahBayar = true;
+              simpanData();
+              renderTable();
+            }
+          };
+        }
+        bayarBtn.classList.add("btn-bayar");
+        aksiTd.appendChild(bayarBtn);
+
+        // Tombol Edit
+        const editBtn = document.createElement("button");
+        editBtn.title = "Edit Pelanggan";
+        editBtn.style.backgroundColor = "#2980b9";
+        editBtn.innerHTML = "";
+        editBtn.appendChild(buatIcon("M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"));
+        editBtn.onclick = () => bukaPopupEdit(i);
+        aksiTd.appendChild(editBtn);
+
+        // Tombol Hapus
+        const hapusBtn = document.createElement("button");
+        hapusBtn.title = "Hapus Pelanggan";
+        hapusBtn.style.backgroundColor = "#c0392b";
+        hapusBtn.innerHTML = "";
+        hapusBtn.appendChild(buatIcon("M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-4.5l-1-1z"));
+        hapusBtn.onclick = () => {
+          if(confirm(`Hapus pelanggan "${pel.nama}"?`)) {
+            dataPelanggan.splice(i,1);
+            simpanData();
+            renderTable();
+          }
+        };
+        aksiTd.appendChild(hapusBtn);
+
+        if(pel.sudahBayar) {
+          tableSudahBayar.appendChild(tr);
+        } else {
+          tableBelumBayar.appendChild(tr);
+        }
+      });
+    }
+
+    formTambah.addEventListener("submit", e => {
+      e.preventDefault();
+      if (!namaInput.value.trim() || !tanggalInput.value || !paketInput.value || !nohpInput.value.trim()) {
+        alert("Mohon isi semua input dengan benar!");
+        return;
+      }
+      // Validasi nomor HP sederhana sudah pakai pattern di input
+      const nohpVal = nohpInput.value.trim();
+      if (!/^\d{9,15}$/.test(nohpVal)) {
+        alert("Nomor HP harus angka dan antara 9-15 digit.");
+        return;
+      }
+      dataPelanggan.push({
+        nama: namaInput.value.trim(),
+        tanggal: tanggalInput.value,
+        paket: paketInput.value,
+        nohp: nohpVal,
+        sudahBayar: false
+      });
+      simpanData();
+      renderTable();
+      clearInput();
+    });
+
+    function bukaPopupEdit(index) {
+      indexEdit = index;
+      const pel = dataPelanggan[index];
+      editNama.value = pel.nama;
+      editTanggal.value = pel.tanggal;
+      editPaket.value = pel.paket;
+      editNohp.value = pel.nohp;
+      popupEdit.style.display = "flex";
+    }
+
+    simpanEditBtn.addEventListener("click", () => {
+      if (!editNama.value.trim() || !editTanggal.value || !editPaket.value || !editNohp.value.trim()) {
+        alert("Mohon isi semua input edit dengan benar!");
+        return;
+      }
+      const nohpVal = editNohp.value.trim();
+      if (!/^\d{9,15}$/.test(nohpVal)) {
+        alert("Nomor HP harus angka dan antara 9-15 digit.");
+        return;
+      }
+      dataPelanggan[indexEdit] = {
+        ...dataPelanggan[indexEdit],
+        nama: editNama.value.trim(),
+        tanggal: editTanggal.value,
+        paket: editPaket.value,
+        nohp: nohpVal
+      };
+      simpanData();
+      renderTable();
+      popupEdit.style.display = "none";
+    });
+
+    cancelEditBtn.addEventListener("click", () => {
+      popupEdit.style.display = "none";
+    });
+
+    // Tutup popup jika klik di luar konten
+    popupEdit.addEventListener("click", e => {
+      if (e.target === popupEdit) {
+        popupEdit.style.display = "none";
+      }
+    });
+
+    resetBtn.addEventListener("click", async () => {
+      if(dataPelanggan.filter(p => p.sudahBayar).length === 0){
+        alert("Tidak ada data pelanggan yang sudah bayar untuk direset.");
+        return;
+      }
+      if(confirm("Reset semua data sudah bayar menjadi belum bayar dan simpan data sebagai PDF?")) {
+        // Generate PDF dulu
+        await exportDataToPDF();
+        // Reset status sudahBayar semua jadi false
+        dataPelanggan = dataPelanggan.map(p => ({ ...p, sudahBayar: false }));
+        simpanData();
+        renderTable();
+        alert("Reset berhasil, semua pelanggan sekarang belum bayar.");
+      }
+    });
+
+    async function exportDataToPDF() {
+      const pdf = new jsPDF();
+      pdf.setFontSize(18);
+      pdf.text("Data Pelanggan Sudah Bayar", 14, 22);
+      pdf.setFontSize(12);
+      const columns = ["Nama", "Tanggal", "Paket", "No HP"];
+      const rows = dataPelanggan
+        .filter(p => p.sudahBayar)
+        .map(p => [p.nama, p.tanggal, p.paket, p.nohp]);
+      if(rows.length === 0) {
+        alert("Tidak ada pelanggan sudah bayar untuk diekspor.");
+        return;
+      }
+      // simple table rendering
+      pdf.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 30,
+        styles: { fontSize: 10 },
+      });
+      pdf.save("pelanggan_sudah_bayar.pdf");
+    }
+
+    // Include jsPDF autotable plugin (load script dynamically)
+    function loadAutoTableScript() {
+      return new Promise((resolve, reject) => {
+        if(window.jspdf && window.jspdf.autoTable) {
+          resolve();
+          return;
+        }
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js";
+        script.onload = () => resolve();
+        script.onerror = () => reject("Gagal memuat plugin jsPDF autotable");
+        document.head.appendChild(script);
+      });
+    }
+
+    loadAutoTableScript().then(() => {
+      loadData();
+      renderTable();
+    }).catch(err => {
+      alert(err);
+      loadData();
+      renderTable();
+    });
+  </script>
+</body>
+</html>
