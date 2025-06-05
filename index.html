@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WEBSITE REKAP SEDHANA</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
@@ -13,7 +13,6 @@
       padding: 20px;
       color: #333;
     }
-
     header {
       background: #1e3a8a;
       color: white;
@@ -22,14 +21,12 @@
       border-radius: 8px;
       margin-bottom: 20px;
     }
-
     .container {
       background: white;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
     }
-
     input, button, select {
       padding: 10px;
       margin: 5px 0;
@@ -38,7 +35,6 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
-
     button {
       background: #1e3a8a;
       color: white;
@@ -46,39 +42,32 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-
     button:hover {
       background: #162d6a;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
     }
-
     th, td {
       border: 1px solid #e0e0e0;
       padding: 10px;
       text-align: left;
       font-size: 14px;
     }
-
     th {
       background-color: #1e3a8a;
       color: white;
     }
-
     .green {
       background-color: #e6f4ea;
     }
-
     .section-title {
       margin-top: 40px;
       font-size: 18px;
       font-weight: bold;
     }
-
     .modal {
       display: none;
       position: fixed;
@@ -87,7 +76,6 @@
       width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.5);
     }
-
     .modal-content {
       background-color: white;
       padding: 20px;
@@ -96,7 +84,6 @@
       border-radius: 8px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-
     .close {
       float: right;
       font-size: 24px;
@@ -105,8 +92,37 @@
   </style>
 </head>
 <body>
+  <header>
+    <h1>WEBSITE REKAP SEDHANA</h1>
+  </header>
 
-  <!-- Seluruh isi HTML tetap sama -->
+  <div class="container">
+    <h2>Input Pelanggan</h2>
+    <input type="text" id="nama" placeholder="Nama">
+    <input type="text" id="nohp" placeholder="Nomor HP">
+    <input type="date" id="tanggal">
+    <select id="paket">
+      <option value="">Pilih Paket</option>
+      <option value="Paket A">Paket A</option>
+      <option value="Paket B">Paket B</option>
+      <option value="Paket C">Paket C</option>
+    </select>
+    <button onclick="tambahPelanggan()">Tambah</button>
+
+    <h2 class="section-title">Daftar Pelanggan</h2>
+    <table id="tabelPelanggan">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Nomor HP</th>
+          <th>Tanggal</th>
+          <th>Paket</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <script>
     const API_KEY = "AIzaSyCh1Tfep10FLnw4uq55ijNJdHnuDFszYVw";
@@ -114,7 +130,45 @@
     const SHEET_NAME = "Sheet1";
 
     let dataPelanggan = [];
-    let editIndex = -1;
+
+    function tampilkanData() {
+      const tbody = document.querySelector("#tabelPelanggan tbody");
+      tbody.innerHTML = "";
+      dataPelanggan.forEach(p => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${p.nama}</td>
+          <td><a href="https://wa.me/${p.nohp}" target="_blank">${p.nohp}</a></td>
+          <td>${p.tanggal}</td>
+          <td>${p.paket}</td>
+          <td>${p.sudahBayar ? "Sudah Bayar" : "Belum Bayar"}</td>
+        `;
+        row.className = p.sudahBayar ? "green" : "";
+        tbody.appendChild(row);
+      });
+    }
+
+    function ambilDataDariSheet() {
+      fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+          const values = data.values || [];
+          values.slice(1).forEach(row => {
+            const [nama, nohp, tanggal, paket, status] = row;
+            dataPelanggan.push({
+              nama,
+              nohp,
+              tanggal,
+              paket,
+              sudahBayar: status === "Sudah Bayar"
+            });
+          });
+          tampilkanData();
+        })
+        .catch(err => {
+          console.error("❌ Gagal mengambil data:", err);
+        });
+    }
 
     function tambahKeSheet(nama, nohp, tanggal, paket, status) {
       fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}!A:E:append?valueInputOption=USER_ENTERED&key=${API_KEY}`, {
@@ -144,10 +198,11 @@
         alert("Semua kolom harus diisi!");
         return;
       }
+      const status = "Belum Bayar";
       dataPelanggan.push({ nama, nohp, tanggal, paket, sudahBayar: false });
-      tambahKeSheet(nama, nohp, tanggal, paket, "Belum Bayar");
+      tambahKeSheet(nama, nohp, tanggal, paket, status);
 
-      // Reset input setelah menambahkan
+      // Reset input
       document.getElementById("nama").value = "";
       document.getElementById("nohp").value = "";
       document.getElementById("tanggal").value = "";
@@ -156,8 +211,8 @@
       tampilkanData();
     }
 
-    // Semua fungsi JavaScript lainnya tetap sama di bawah ini
+    // Ambil data saat halaman dimuat
+    window.onload = ambilDataDariSheet;
   </script>
-
 </body>
 </html>
